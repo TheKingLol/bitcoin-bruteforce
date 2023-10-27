@@ -2,14 +2,28 @@ from bit import Key
 from multiprocessing import cpu_count, Process
 from requests import get
 from time import sleep
+import os
 
-with open('wallets.txt', 'r') as file:
-    wallets = set(file.read().split('\n'))
+# Function to read addresses from files in a directory
+def read_addresses_from_directory(directory):
+    wallets = set()
+    for filename in os.listdir(directory):
+        if filename.endswith(".txt"):
+            with open(os.path.join(directory, filename), 'r') as file:
+                addresses = file.read().split('\n')
+                wallets.update(addresses)
     if '' in wallets:
         wallets.remove('')
+    return wallets
+
+# Define the input and output directories
+input_directory = '/database/latest'
+output_file = 'found.txt'
+
+# Read addresses from the input directory
+wallets = read_addresses_from_directory(input_directory)
 
 max_p = 115792089237316195423570985008687907852837564279074904382605163141518161494336
-
 
 # random bruteforce
 # Will randomly generate addresses
@@ -19,9 +33,8 @@ def RBF(r, sep_p):
         pk = Key()
         if pk.address in wallets:
             print(f'Instance: {r + 1} - Found: {pk.address}')
-            with open('found.txt', 'a') as result:
-                result.write(f'{pk.to_wif()}')
-
+            with open(output_file, 'a') as result:
+                result.write(f'{pk.to_wif()}\n')
 
 # random bruteforce output
 def debug_RBF(r, sep_p):
@@ -31,9 +44,8 @@ def debug_RBF(r, sep_p):
         print(f'Instance: {r + 1} - Generated: {pk.address}')
         if pk.address in wallets:
             print(f'Instance: {r + 1} - Found: {pk.address}')
-            with open('found.txt', 'a') as result:
-                result.write(f'{pk.to_wif()}')
-
+            with open(output_file, 'a') as result:
+                result.write(f'{pk.to_wif()}\n')
 
 # traditional bruteforce (slowest)
 # Will try every INT from 0 to max possible
@@ -45,11 +57,10 @@ def TBF(r, sep_p):
         pk = Key.from_int(sint)
         if pk.address in wallets:
             print(f'Instance: {r + 1} - Found: {pk.address}')
-            with open('found.txt', 'a') as result:
+            with open(output_file, 'a') as result:
                 result.write(f'{pk.to_wif()}\n')
         sint += 1
     print(f'Instance: {r + 1}  - Done')
-
 
 # online bruteforce (randomized)
 def OBF():
@@ -68,12 +79,11 @@ def OBF():
 
         print(f'Instance: 1 - {pk.address} has balance: {balance}')
         if balance > 0:
-            with open('found.txt', 'a') as result:
-                result.write(f'{pk.to_wif()}')
-            print(f'Instance: 1 - Added address to found.txt')
+            with open(output_file, 'a') as result:
+                result.write(f'{pk.to_wif()}\n')
+            print(f'Instance: 1 - Added address to {output_file}')
         print('Sleeping for 10 seconds...')
         sleep(10)
-
 
 # traditional bruteforce output
 def debug_TBF(r, sep_p):
@@ -85,15 +95,14 @@ def debug_TBF(r, sep_p):
         print(f'Instance: {r + 1} - Generated: {pk.address}')
         if pk.address in wallets:
             print(f'Instance: {r + 1} - Found: {pk.address}')
-            with open('found.txt', 'a') as result:
+            with open(output_file, 'a') as result:
                 result.write(f'{pk.to_wif()}\n')
         sint += 1
     print(f'Instance: {r + 1}  - Done')
 
-
 # optimized traditional bruteforce
 # Will try every INT between 10**75 and max possibility.
-# This methode is based on the best practice to get the safest address possible.
+# This method is based on the best practice to get the safest address possible.
 def OTBF(r, sep_p):
     sint = (sep_p * r) + 10 ** 75 if r == 0 else (sep_p * r)
     mint = (sep_p * (r + 1))
@@ -102,13 +111,12 @@ def OTBF(r, sep_p):
         pk = Key.from_int(sint)
         if pk.address in wallets:
             print(f'Instance: {r + 1} - Found: {pk.address}')
-            with open('found.txt', 'a') as result:
+            with open(output_file, 'a') as result:
                 result.write(f'{pk.to_wif()}\n')
         sint += 1
     print(f'Instance: {r + 1}  - Done')
 
-
-# optimized traditional bruteforce ouput
+# optimized traditional bruteforce output
 def debug_OTBF(r, sep_p):
     sint = (sep_p * r) + 10 ** 75 if r == 0 else (sep_p * r)
     mint = (sep_p * (r + 1))
@@ -118,17 +126,16 @@ def debug_OTBF(r, sep_p):
         print(f'Instance: {r + 1} - Generated: {pk.address}')
         if pk.address in wallets:
             print(f'Instance: {r + 1} - Found: {pk.address}')
-            with open('found.txt', 'a') as result:
+            with open(output_file, 'a') as result:
                 result.write(f'{pk.to_wif()}\n')
         sint += 1
     print(f'Instance: {r + 1}  - Done')
 
-
 def main():
-    # set bruteforce mode
+    # Set bruteforce mode
     mode = (None, RBF, TBF, OTBF, OBF, debug_RBF, debug_TBF, debug_OTBF)
 
-    # print menu
+    # Print menu
     menu_string = 'Select bruteforce mode:\n'
     for count, function in enumerate(mode):
         try:
@@ -175,6 +182,6 @@ def main():
 
     print('Stopping...')
 
-
 if __name__ == '__main__':
     main()
+
