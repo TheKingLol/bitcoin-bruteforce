@@ -11,7 +11,7 @@ Bitcoin public address brute force written in Python with simplicity and speed i
 ### Upcoming features
 - Automatic payout system
 - Save bruteforce progress
-- Create wallet database
+- ~~Create wallet database~~ Done in this fork
 - See hash rate
 
 ## Setup
