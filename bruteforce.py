@@ -17,7 +17,7 @@ def read_addresses_from_directory(directory):
     return wallets
 
 # Define the input and output directories
-input_directory = '/database/latest'
+input_directory = 'database/latest'
 output_file = 'found.txt'
 
 # Read addresses from the input directory
