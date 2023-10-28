@@ -7,12 +7,14 @@ Bitcoin public address brute force written in Python with simplicity and speed i
 - Multiple bruteforce functions
 - Online wallet lookup (OBF)
 - Print generation output
+- A database full of wallet addresses with a balance
+- Hashrate on some functions
 
 ### Upcoming features
 - Automatic payout system
 - Save bruteforce progress
-- ~~Create wallet database~~ Done in this fork
-- See hash rate
+- ~~Create wallet database~~ Done in this fork, more info in the database folder
+- ~~See hash rate~~
 
 ## Setup
 
@@ -106,3 +108,13 @@ When the bruteforce matches an address in the [wallets.txt](wallets.txt) file. I
 ```bash
 $ Instance: 1 - Found: 1P5ZEDWTKTFGxQjZphgWPQUpe554WKDfHQ
 ```
+
+## What mode should I use???
+### Randomized Brute Force (Random Brute Force):
+- This method generates addresses randomly. While it's unpredictable and not suitable for all use cases, it might be the quickest way to discover addresses with non-zero balances. However, it's not a method optimized for thorough and systematic searching.
+### Traditional Brute Force (TBF):
+- This method systematically iterates through all possible private keys, which guarantees that it will find a matching address eventually. It's the most thorough method but can take a long time to discover a match, especially if the address is near the end of the search space.
+### Optimized Traditional Brute Force (OTBF): 
+- This method is similar to TBF but starts the search from a high range to improve the chances of finding addresses with funds. It's more efficient than TBF but may still take time if the target address is far from the starting point.
+### Online Brute Force (OBF):
+- This method generates addresses and checks their balances online, making it suitable for discovering addresses with funds. However, it's slower than the other methods due to online balance checks and rate limits on the API.
